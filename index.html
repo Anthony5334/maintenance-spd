@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Maintenance SPD</title>
+
 <style>
+
 body{
 font-family:Arial;
-background:#f4f6f8;
-padding:30px;
+background:#f2f4f8;
+padding:40px;
 }
 
 h1{
@@ -19,18 +21,27 @@ background:white;
 padding:20px;
 margin-bottom:20px;
 border-radius:10px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
 button{
-background:#000;
+background:black;
 color:white;
 padding:10px 15px;
 border:none;
 border-radius:5px;
 cursor:pointer;
 }
+
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:5px;
+margin-bottom:10px;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -38,20 +49,68 @@ cursor:pointer;
 <h1>Maintenance SPD</h1>
 
 <div class="card">
-<h2>Sites</h2>
-<p>9 établissements suivis</p>
+
+<h2>Établissements</h2>
+
+<ul>
+
+<li>Laval</li>
+<li>Mayenne</li>
+<li>Ernée</li>
+<li>Évron</li>
+<li>Bonchamp</li>
+<li>Changé</li>
+<li>Château-Gontier</li>
+<li>Craon</li>
+<li>MB Évron</li>
+
+</ul>
+
 </div>
 
 <div class="card">
-<h2>Équipements</h2>
-<p>Gestion des machines</p>
+
+<h2>Signaler une panne</h2>
+
+<label>Machine</label>
+<input id="machine" placeholder="ex: LAV-FOUR-01">
+
+<label>Description du problème</label>
+<textarea id="desc"></textarea>
+
+<button onclick="envoyer()">Envoyer</button>
+
 </div>
 
 <div class="card">
-<h2>Demandes maintenance</h2>
-<p>Les responsables peuvent signaler une panne</p>
-<button>Envoyer une demande</button>
+
+<h2>Historique</h2>
+
+<ul id="hist"></ul>
+
 </div>
+
+<script>
+
+function envoyer(){
+
+let m=document.getElementById("machine").value
+let d=document.getElementById("desc").value
+
+if(m=="" || d==""){
+alert("Merci de remplir les champs")
+return
+}
+
+let li=document.createElement("li")
+
+li.innerHTML=m+" : "+d
+
+document.getElementById("hist").appendChild(li)
+
+}
+
+</script>
 
 </body>
 </html>
