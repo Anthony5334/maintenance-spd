@@ -861,3 +861,108 @@
   </script>
 </body>
 </html>
+  const i = order.indexOf(current.status);
+  current.status = order[(i + 1) % order.length];
+  render();
+}
+window.changeRequestStatus = changeRequestStatus;
+
+document.getElementById('modeSwitch').addEventListener('click', () => {
+  state.mode = state.mode === 'admin' ? 'responsable' : 'admin';
+  render();
+});
+
+document.getElementById('setupBtn').addEventListener('click', () => {
+  const name = document.getElementById('setupName').value.trim();
+  const email = document.getElementById('setupEmail').value.trim();
+  const password = document.getElementById('setupPassword').value.trim();
+  if (!name || !email || !password) return alert('Merci de remplir tous les champs.');
+  state.adminAccount = { name, email, password };
+  state.adminLogged = true;
+  render();
+});
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  if (email === state.adminAccount?.email && password === state.adminAccount?.password) {
+    state.adminLogged = true;
+    render();
+  } else {
+    alert('Identifiants incorrects.');
+  }
+});
+
+document.querySelectorAll('.tab').forEach(tab =>
+  tab.addEventListener('click', () => selectTab(tab.dataset.tab))
+);
+
+document.getElementById('equipmentSearch').addEventListener('input', renderEquipments);
+
+document.getElementById('openSiteModalBtn').addEventListener('click', () => {
+  resetSiteForm();
+  openModal('siteModal');
+});
+
+document.getElementById('openEquipmentModalBtn').addEventListener('click', () => {
+  resetEquipmentForm();
+  openModal('equipmentModal');
+});
+
+document.getElementById('saveSiteBtn').addEventListener('click', () => {
+  const name = document.getElementById('siteNameInput').value.trim();
+  const code = document.getElementById('siteCodeInput').value.trim().toUpperCase();
+  const manager = document.getElementById('siteManagerInput').value.trim();
+
+  if (!name || !code || !manager) return alert('Merci de remplir tous les champs.');
+
+  state.sites.push({
+    id: uid('S'),
+    name,
+    code,
+    manager
+  });
+
+  closeModal('siteModal');
+  render();
+});
+
+document.getElementById('saveEquipmentBtn').addEventListener('click', async () => {
+  const siteId = document.getElementById('equipmentSiteInput').value;
+  const type = document.getElementById('equipmentTypeInput').value.trim();
+  const typeCode = document.getElementById('equipmentTypeCodeInput').value.trim().toUpperCase();
+  const number = document.getElementById('equipmentNumberInput').value.trim().padStart(2,'0');
+  const brand = document.getElementById('equipmentBrandInput').value.trim();
+  const model = document.getElementById('equipmentModelInput').value.trim();
+  const serial = document.getElementById('equipmentSerialInput').value.trim();
+  const status = document.getElementById('equipmentStatusInput').value;
+  const installedAt = document.getElementById('equipmentInstalledInput').value;
+  const warrantyEnd = document.getElementById('equipmentWarrantyInput').value;
+
+  const photo = await readFileAsDataURL(
+    document.getElementById('equipmentPhotoInput').files[0]
+  );
+
+  const id = `${formatSiteCode(siteId)}-${typeCode}-${number}`;
+
+  state.equipments.push({
+    id,
+    siteId,
+    type,
+    brand,
+    model,
+    serial,
+    status,
+    installedAt,
+    warrantyEnd,
+    photo
+  });
+
+  state.histories[id] = [];
+  state.selectedEquipmentId = id;
+
+  closeModal('equipmentModal');
+  render();
+});
+
+render();
