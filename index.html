@@ -1,116 +1,863 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Maintenance SPD</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintenance SPD</title>
+  <style>
+    :root {
+      --bg: #f3f5f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --green-bg: #dcfce7;
+      --green-text: #166534;
+      --amber-bg: #fef3c7;
+      --amber-text: #92400e;
+      --red-bg: #fee2e2;
+      --red-text: #991b1b;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
 
-<style>
+    * { box-sizing: border-box; }
 
-body{
-font-family:Arial;
-background:#f2f4f8;
-padding:40px;
-}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #eef2f7 0%, #ffffff 45%, #eef1f6 100%);
+      color: var(--text);
+    }
 
-h1{
-color:#222;
-}
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
 
-.card{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
 
-button{
-background:black;
-color:white;
-padding:10px 15px;
-border:none;
-border-radius:5px;
-cursor:pointer;
-}
+    .title-wrap h1 {
+      margin: 0;
+      font-size: 34px;
+    }
 
-input,textarea{
-width:100%;
-padding:10px;
-margin-top:5px;
-margin-bottom:10px;
-}
+    .title-wrap p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
 
-</style>
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
 
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .kpi .value {
+      font-size: 34px;
+      font-weight: 700;
+      margin: 10px 0 6px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button, .button {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 11px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .tab {
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .hidden { display: none !important; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .status-service { background: var(--green-bg); color: var(--green-text); }
+    .status-surveillance { background: var(--amber-bg); color: var(--amber-text); }
+    .status-panne, .status-ouverte { background: var(--red-bg); color: var(--red-text); }
+    .status-encours { background: var(--amber-bg); color: var(--amber-text); }
+    .status-cloturee, .status-terminee { background: var(--green-bg); color: var(--green-text); }
+
+    .list-item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      background: #fff;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 20px;
+    }
+
+    .photo-box, .qr-box {
+      height: 180px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      color: #94a3b8;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .qr-box.small { height: 120px; }
+
+    .site-card h3, .equipment-card h3 { margin: 0 0 6px; }
+
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field { margin-bottom: 14px; }
+
+    .empty {
+      padding: 18px;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      color: var(--muted);
+      background: #fafafa;
+    }
+
+    .top-banner {
+      background: #111827;
+      color: white;
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .top-banner p { margin: 8px 0 0; color: #d1d5db; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr 1fr;
+      gap: 16px;
+    }
+
+    .small { font-size: 13px; }
+
+    .app-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .switch {
+      width: 48px;
+      height: 28px;
+      background: #d1d5db;
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .switch::after {
+      content: "";
+      width: 22px;
+      height: 22px;
+      background: white;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      border-radius: 50%;
+      transition: .2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .switch.active {
+      background: #111827;
+    }
+
+    .switch.active::after {
+      left: 23px;
+    }
+
+    @media (max-width: 980px) {
+      .grid-4, .grid-3, .grid-2, .two-col, .three-col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="header">
+      <div class="title-wrap">
+        <h1>Maintenance SPD</h1>
+        <p>Application maintenance multi-sites pour 8 pizzerias et MB Évron.</p>
+      </div>
+      <div class="app-toggle">
+        <span class="small muted">Mode responsable</span>
+        <div id="modeSwitch" class="switch active"></div>
+        <span class="small"><strong>Mode admin</strong></span>
+      </div>
+    </div>
 
-<h1>Maintenance SPD</h1>
+    <div id="adminApp">
+      <div id="loginView" class="two-col">
+        <div class="card">
+          <h2 class="section-title">Connexion administrateur</h2>
+          <div class="field">
+            <div class="label">Email</div>
+            <input id="loginEmail" type="email" placeholder="admin@maintenance-spd.fr" />
+          </div>
+          <div class="field">
+            <div class="label">Mot de passe</div>
+            <input id="loginPassword" type="password" placeholder="••••••••" />
+          </div>
+          <button id="loginBtn">Accéder à l’espace admin</button>
+        </div>
+        <div class="top-banner">
+          <h2 style="margin:0;">Résumé du projet</h2>
+          <p>9 établissements, environ 90 machines, QR codes par appareil, historique de maintenance et demandes responsables centralisées.</p>
+        </div>
+      </div>
 
-<div class="card">
+      <div id="adminView" class="hidden">
+        <div class="tabs">
+          <div class="tab active" data-tab="dashboard">Dashboard</div>
+          <div class="tab" data-tab="sites">Sites</div>
+          <div class="tab" data-tab="equipements">Équipements</div>
+          <div class="tab" data-tab="fiche">Fiche appareil</div>
+          <div class="tab" data-tab="demandes">Demandes</div>
+          <div class="tab" data-tab="qr">QR codes</div>
+        </div>
 
-<h2>Établissements</h2>
+        <div id="tab-dashboard" class="tab-panel">
+          <div class="grid grid-4">
+            <div class="card kpi"><div class="muted">Sites suivis</div><div class="value" id="kpiSites">0</div><div class="muted small">8 pizzerias + MB Évron</div></div>
+            <div class="card kpi"><div class="muted">Équipements</div><div class="value" id="kpiEquipments">0</div><div class="muted small">Base complète multi-sites</div></div>
+            <div class="card kpi"><div class="muted">Machines en panne</div><div class="value" id="kpiDown">0</div><div class="muted small">À traiter rapidement</div></div>
+            <div class="card kpi"><div class="muted">Demandes ouvertes</div><div class="value" id="kpiRequests">0</div><div class="muted small">Responsables + suivi central</div></div>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="label">Disponibilité des équipements</div>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+              <div style="font-size:30px;font-weight:700;" id="availabilityValue">0%</div>
+              <div style="flex:1;min-width:220px;background:#e5e7eb;height:12px;border-radius:999px;overflow:hidden;">
+                <div id="availabilityBar" style="height:100%;width:0;background:#111827;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-2" style="margin-top:16px;">
+            <div class="card">
+              <h2 class="section-title">Dernières demandes</h2>
+              <div id="latestRequests"></div>
+            </div>
+            <div class="card">
+              <h2 class="section-title">Répartition par site</h2>
+              <div id="siteOverview"></div>
+            </div>
+          </div>
+        </div>
 
-<ul>
+        <div id="tab-sites" class="tab-panel hidden">
+          <div class="grid grid-3" id="sitesGrid"></div>
+        </div>
 
-<li>Laval</li>
-<li>Mayenne</li>
-<li>Ernée</li>
-<li>Évron</li>
-<li>Bonchamp</li>
-<li>Changé</li>
-<li>Château-Gontier</li>
-<li>Craon</li>
-<li>MB Évron</li>
+        <div id="tab-equipements" class="tab-panel hidden">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="toolbar">
+              <input id="equipmentSearch" placeholder="Rechercher un équipement, une marque, un site..." style="max-width:420px;" />
+              <button class="secondary" id="generate90Btn">Recharger la base 90 machines</button>
+            </div>
+          </div>
+          <div class="grid" id="equipmentsList"></div>
+        </div>
 
-</ul>
+        <div id="tab-fiche" class="tab-panel hidden">
+          <div class="three-col">
+            <div class="card">
+              <h2 class="section-title">Fiche appareil</h2>
+              <div class="photo-box">Photo appareil<br><span class="small">zone prévue pour ajouter l’image</span></div>
+              <div id="equipmentDetails" style="margin-top:16px;"></div>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+              <h2 class="section-title">Historique des interventions</h2>
+              <div id="equipmentHistory"></div>
+            </div>
+          </div>
+        </div>
 
-</div>
+        <div id="tab-demandes" class="tab-panel hidden">
+          <div class="card">
+            <h2 class="section-title">Demandes de maintenance</h2>
+            <div id="requestsList"></div>
+          </div>
+        </div>
 
-<div class="card">
+        <div id="tab-qr" class="tab-panel hidden">
+          <div class="card" style="margin-bottom:16px;">
+            <h2 class="section-title">Étiquettes QR prêtes à imprimer</h2>
+            <p class="muted">Chaque machine a un code unique au format SITE-TYPE-NUMÉRO. Le responsable scanne, consulte l’historique et envoie sa demande.</p>
+          </div>
+          <div class="grid grid-3" id="qrGrid"></div>
+        </div>
+      </div>
+    </div>
 
-<h2>Signaler une panne</h2>
+    <div id="responsableApp" class="hidden">
+      <div class="two-col">
+        <div class="card">
+          <h2 class="section-title">Fiche équipement via QR code</h2>
+          <div class="field">
+            <div class="label">Choisir une machine</div>
+            <select id="responsableEquipmentSelect"></select>
+          </div>
+          <div class="photo-box">Photo appareil<br><span class="small">zone prévue pour l’image de la machine</span></div>
+          <div id="responsableEquipmentDetails" style="margin-top:16px;"></div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:20px 0;" />
+          <h3 style="margin:0 0 14px;">Historique</h3>
+          <div id="responsableHistory"></div>
+        </div>
 
-<label>Machine</label>
-<input id="machine" placeholder="ex: LAV-FOUR-01">
+        <div class="card">
+          <h2 class="section-title">Signaler une panne</h2>
+          <div class="field">
+            <div class="label">Responsable</div>
+            <select id="responsableName"></select>
+          </div>
+          <div class="field">
+            <div class="label">Description du problème</div>
+            <textarea id="responsableDescription" placeholder="Décris la panne ou le comportement anormal..."></textarea>
+          </div>
+          <div class="field">
+            <div class="label">Photo de la panne</div>
+            <div class="photo-box" style="height:120px;">Ajout photo prévu<br><span class="small">dans cette V1, la mention est enregistrée</span></div>
+          </div>
+          <button id="sendRequestBtn">Envoyer la demande</button>
+          <p class="muted small" style="margin-top:12px;">La demande est ajoutée automatiquement dans le suivi admin.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<label>Description du problème</label>
-<textarea id="desc"></textarea>
+  <script>
+    const STORAGE_KEY = "maintenance_spd_v1";
 
-<button onclick="envoyer()">Envoyer</button>
+    const sites = [
+      { id: "S01", name: "Laval", code: "LAV", manager: "Responsable Laval" },
+      { id: "S02", name: "Mayenne", code: "MAY", manager: "Responsable Mayenne" },
+      { id: "S03", name: "Ernée", code: "ERN", manager: "Responsable Ernée" },
+      { id: "S04", name: "Évron", code: "EVR", manager: "Responsable Évron" },
+      { id: "S05", name: "Bonchamp", code: "BON", manager: "Responsable Bonchamp" },
+      { id: "S06", name: "Changé", code: "CHA", manager: "Responsable Changé" },
+      { id: "S07", name: "Château-Gontier", code: "CGO", manager: "Responsable Château-Gontier" },
+      { id: "S08", name: "Craon", code: "CRA", manager: "Responsable Craon" },
+      { id: "S09", name: "MB Évron", code: "MBE", manager: "Responsable MB Évron" },
+    ];
 
-</div>
+    const typeMeta = [
+      { label: "Four à pizza", code: "FOUR", brand: "Moretti", model: "T64E" },
+      { label: "Chambre froide", code: "CHFR", brand: "Friginox", model: "CF900" },
+      { label: "Frigo positif", code: "FRIGO", brand: "True", model: "T-23" },
+      { label: "Congélateur", code: "CONG", brand: "Liebherr", model: "GGU" },
+      { label: "Pétrin", code: "PETR", brand: "Sammic", model: "BM-20" },
+      { label: "Laminoir", code: "LAMI", brand: "Pizza Group", model: "DL40" },
+      { label: "Hotte", code: "HOTTE", brand: "Halton", model: "KVF" },
+      { label: "Climatisation", code: "CLIM", brand: "Daikin", model: "SkyAir" },
+      { label: "Caisse", code: "CAISSE", brand: "Tiller", model: "POS X" },
+      { label: "Lave-vaisselle", code: "LV", brand: "Winterhalter", model: "UC-M" },
+    ];
 
-<div class="card">
+    function formatSiteName(siteId) {
+      const site = sites.find(s => s.id === siteId);
+      return site ? site.name : "-";
+    }
 
-<h2>Historique</h2>
+    function statusBadge(status) {
+      const s = String(status || "").toLowerCase();
+      if (s.includes("service")) return '<span class="badge status-service">En service</span>';
+      if (s.includes("surveiller")) return '<span class="badge status-surveillance">À surveiller</span>';
+      if (s.includes("panne")) return '<span class="badge status-panne">En panne</span>';
+      if (s.includes("ouverte")) return '<span class="badge status-ouverte">Ouverte</span>';
+      if (s.includes("cours")) return '<span class="badge status-encours">En cours</span>';
+      if (s.includes("clôt")) return '<span class="badge status-cloturee">Clôturée</span>';
+      if (s.includes("termin")) return '<span class="badge status-terminee">Terminée</span>';
+      return `<span class="badge">${status}</span>`;
+    }
 
-<ul id="hist"></ul>
+    function buildDefaultState() {
+      const equipments = [];
+      const histories = {};
 
-</div>
+      sites.forEach((site, siteIndex) => {
+        typeMeta.forEach((type, typeIndex) => {
+          const id = `${site.code}-${type.code}-01`;
+          const year = 2023 + ((siteIndex + typeIndex) % 3);
+          const warranty = year + 2;
+          const month = String((typeIndex % 9) + 1).padStart(2, "0");
+          const day = String((siteIndex % 9) + 10).padStart(2, "0");
+          let status = "En service";
+          if ((siteIndex + typeIndex) % 11 === 0) status = "En panne";
+          else if ((siteIndex + typeIndex) % 4 === 0) status = "À surveiller";
 
-<script>
+          const equipment = {
+            id,
+            siteId: site.id,
+            type: type.label,
+            brand: type.brand,
+            model: type.model,
+            serial: `${site.code}-${type.code}-${String(siteIndex + 1).padStart(2, "0")}${String(typeIndex + 1).padStart(2, "0")}`,
+            installedAt: `${year}-${month}-${day}`,
+            warrantyEnd: `${warranty}-${month}-${day}`,
+            status,
+          };
 
-function envoyer(){
+          equipments.push(equipment);
+          histories[id] = [
+            {
+              id: `INT-${String(equipments.length).padStart(3, "0")}`,
+              date: "2026-02-18",
+              issue: `${equipment.type} contrôlé sur ${site.name}`,
+              solution: status === "En panne" ? "Diagnostic ouvert" : "Contrôle périodique enregistré",
+              cost: status === "En panne" ? "0 €" : "0 €",
+              status: status === "En panne" ? "Ouverte" : "Terminée",
+            }
+          ];
+        });
+      });
 
-let m=document.getElementById("machine").value
-let d=document.getElementById("desc").value
+      const requests = [
+        { id: "DM-0001", equipmentId: "EVR-CAISSE-01", requester: "Responsable Évron", siteId: "S04", description: "La caisse redémarre toute seule au moment de l'encaissement.", photoNote: "1 photo jointe", date: "2026-03-08", status: "Ouverte" },
+        { id: "DM-0002", equipmentId: "LAV-CHFR-01", requester: "Responsable Laval", siteId: "S01", description: "Température instable depuis ce matin dans la chambre froide.", photoNote: "1 photo jointe", date: "2026-03-07", status: "En cours" },
+        { id: "DM-0003", equipmentId: "MBE-FRIGO-01", requester: "Responsable MB Évron", siteId: "S09", description: "Porte ferme mal, besoin de contrôle du joint.", photoNote: "0 photo", date: "2026-03-06", status: "Clôturée" },
+        { id: "DM-0004", equipmentId: "MAY-FOUR-01", requester: "Responsable Mayenne", siteId: "S02", description: "Le four chauffe moins fort sur la sole du bas.", photoNote: "1 photo jointe", date: "2026-03-05", status: "Ouverte" }
+      ];
 
-if(m=="" || d==""){
-alert("Merci de remplir les champs")
-return
-}
+      return {
+        adminLogged: false,
+        selectedEquipmentId: equipments[0].id,
+        mode: "admin",
+        equipments,
+        requests,
+        histories,
+      };
+    }
 
-let li=document.createElement("li")
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return buildDefaultState();
+      try {
+        const parsed = JSON.parse(saved);
+        return { ...buildDefaultState(), ...parsed };
+      } catch {
+        return buildDefaultState();
+      }
+    }
 
-li.innerHTML=m+" : "+d
+    let state = loadState();
 
-document.getElementById("hist").appendChild(li)
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
 
-}
+    function currentEquipment() {
+      return state.equipments.find(e => e.id === state.selectedEquipmentId) || state.equipments[0];
+    }
 
-</script>
+    function render() {
+      saveState();
+      document.getElementById("modeSwitch").classList.toggle("active", state.mode === "admin");
+      document.getElementById("adminApp").classList.toggle("hidden", state.mode !== "admin");
+      document.getElementById("responsableApp").classList.toggle("hidden", state.mode !== "responsable");
 
+      document.getElementById("loginView").classList.toggle("hidden", state.adminLogged);
+      document.getElementById("adminView").classList.toggle("hidden", !state.adminLogged);
+
+      renderDashboard();
+      renderSites();
+      renderEquipments();
+      renderFiche();
+      renderRequests();
+      renderQR();
+      renderResponsable();
+    }
+
+    function renderDashboard() {
+      document.getElementById("kpiSites").textContent = sites.length;
+      document.getElementById("kpiEquipments").textContent = state.equipments.length;
+      document.getElementById("kpiDown").textContent = state.equipments.filter(e => e.status === "En panne").length;
+      document.getElementById("kpiRequests").textContent = state.requests.filter(r => r.status !== "Clôturée").length;
+
+      const availability = Math.round(((state.equipments.filter(e => e.status !== "En panne").length) / Math.max(state.equipments.length, 1)) * 100);
+      document.getElementById("availabilityValue").textContent = availability + "%";
+      document.getElementById("availabilityBar").style.width = availability + "%";
+
+      const latestRequests = document.getElementById("latestRequests");
+      latestRequests.innerHTML = "";
+      state.requests.slice(0, 5).forEach(r => {
+        latestRequests.innerHTML += `
+          <div class="list-item" style="margin-bottom:10px;">
+            <div>
+              <strong>${r.equipmentId}</strong><br>
+              <span class="muted small">${formatSiteName(r.siteId)} · ${r.requester}</span>
+              <div class="small" style="margin-top:6px;">${r.description}</div>
+            </div>
+            <div>${statusBadge(r.status)}</div>
+          </div>`;
+      });
+      if (!state.requests.length) latestRequests.innerHTML = '<div class="empty">Aucune demande.</div>';
+
+      const siteOverview = document.getElementById("siteOverview");
+      siteOverview.innerHTML = "";
+      sites.forEach(site => {
+        const countEquip = state.equipments.filter(e => e.siteId === site.id).length;
+        const countReq = state.requests.filter(r => r.siteId === site.id && r.status !== "Clôturée").length;
+        siteOverview.innerHTML += `
+          <div class="list-item" style="margin-bottom:10px;align-items:center;">
+            <div>
+              <strong>${site.name}</strong><br>
+              <span class="muted small">${countEquip} équipement(s)</span>
+            </div>
+            <div><span class="badge" style="background:#f3f4f6;color:#111827;border-color:#e5e7eb;">${countReq} ouverte(s)</span></div>
+          </div>`;
+      });
+    }
+
+    function renderSites() {
+      const grid = document.getElementById("sitesGrid");
+      grid.innerHTML = "";
+      sites.forEach(site => {
+        const machineCount = state.equipments.filter(e => e.siteId === site.id).length;
+        const requestCount = state.requests.filter(r => r.siteId === site.id).length;
+        grid.innerHTML += `
+          <div class="card site-card">
+            <h3>${site.name}</h3>
+            <div class="muted small">Code : ${site.code}</div>
+            <div style="margin-top:14px;padding:14px;background:#f8fafc;border-radius:14px;">
+              <div class="label">Responsable</div>
+              <div><strong>${site.manager}</strong></div>
+            </div>
+            <div class="grid grid-2" style="margin-top:14px;">
+              <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Machines</div><strong>${machineCount}</strong></div>
+              <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Demandes</div><strong>${requestCount}</strong></div>
+            </div>
+          </div>`;
+      });
+    }
+
+    function renderEquipments() {
+      const list = document.getElementById("equipmentsList");
+      const q = (document.getElementById("equipmentSearch").value || "").toLowerCase();
+      list.innerHTML = "";
+      state.equipments
+        .filter(e => [e.id, e.type, e.brand, e.model, formatSiteName(e.siteId)].join(" ").toLowerCase().includes(q))
+        .forEach(e => {
+          list.innerHTML += `
+            <div class="list-item">
+              <div>
+                <strong>${e.id}</strong><br>
+                <span class="muted small">${formatSiteName(e.siteId)} · ${e.type} · ${e.brand} ${e.model}</span><br>
+                <span class="muted small">Série : ${e.serial}</span>
+              </div>
+              <div class="toolbar">
+                ${statusBadge(e.status)}
+                <button class="secondary" onclick="openEquipment('${e.id}')">Ouvrir la fiche</button>
+                <button onclick="openAsResponsable('${e.id}')">Tester le scan QR</button>
+              </div>
+            </div>`;
+        });
+      if (!list.innerHTML) list.innerHTML = '<div class="empty">Aucun équipement trouvé.</div>';
+    }
+
+    function renderFiche() {
+      const e = currentEquipment();
+      const details = document.getElementById("equipmentDetails");
+      details.innerHTML = `
+        <div class="field"><div class="label">Code équipement</div><strong>${e.id}</strong></div>
+        <div class="field"><div class="label">Site</div><strong>${formatSiteName(e.siteId)}</strong></div>
+        <div class="field"><div class="label">Type</div><strong>${e.type}</strong></div>
+        <div class="field"><div class="label">Marque / Modèle</div><strong>${e.brand} ${e.model}</strong></div>
+        <div class="field"><div class="label">N° de série</div><strong>${e.serial}</strong></div>
+        <div class="field"><div class="label">Installation</div><strong>${e.installedAt}</strong></div>
+        <div class="field"><div class="label">Fin de garantie</div><strong>${e.warrantyEnd}</strong></div>
+        <div class="field">${statusBadge(e.status)}</div>`;
+
+      const history = document.getElementById("equipmentHistory");
+      history.innerHTML = "";
+      (state.histories[e.id] || []).forEach(h => {
+        history.innerHTML += `
+          <div class="list-item" style="margin-bottom:10px;">
+            <div>
+              <strong>${h.id}</strong><br>
+              <span class="muted small">${h.date}</span>
+              <div class="small" style="margin-top:8px;"><strong>Problème :</strong> ${h.issue}</div>
+              <div class="small"><strong>Action :</strong> ${h.solution}</div>
+            </div>
+            <div style="text-align:right;">
+              ${statusBadge(h.status)}
+              <div class="muted small" style="margin-top:8px;">Coût : ${h.cost}</div>
+            </div>
+          </div>`;
+      });
+      if (!(state.histories[e.id] || []).length) history.innerHTML = '<div class="empty">Aucun historique.</div>';
+    }
+
+    function renderRequests() {
+      const list = document.getElementById("requestsList");
+      list.innerHTML = "";
+      state.requests.forEach(r => {
+        list.innerHTML += `
+          <div class="list-item" style="margin-bottom:10px;">
+            <div>
+              <strong>${r.id} · ${r.equipmentId}</strong><br>
+              <span class="muted small">${formatSiteName(r.siteId)} · ${r.requester} · ${r.date}</span>
+              <div class="small" style="margin-top:8px;">${r.description}</div>
+              <div class="muted small" style="margin-top:6px;">${r.photoNote}</div>
+            </div>
+            <div>${statusBadge(r.status)}</div>
+          </div>`;
+      });
+      if (!state.requests.length) list.innerHTML = '<div class="empty">Aucune demande.</div>';
+    }
+
+    function renderQR() {
+      const grid = document.getElementById("qrGrid");
+      grid.innerHTML = "";
+      state.equipments.forEach(e => {
+        grid.innerHTML += `
+          <div class="card equipment-card">
+            <h3>${e.id}</h3>
+            <div class="muted small">${formatSiteName(e.siteId)} · ${e.type}</div>
+            <div class="qr-box small" style="margin:14px 0;">QR code imprimable<br><span class="small">${e.id}</span></div>
+            <div class="toolbar">
+              <button class="secondary" onclick="openEquipment('${e.id}')">Voir la fiche</button>
+              <button onclick="openAsResponsable('${e.id}')">Ouvrir</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    function renderResponsable() {
+      const select = document.getElementById("responsableEquipmentSelect");
+      const nameSelect = document.getElementById("responsableName");
+      select.innerHTML = state.equipments.map(e => `<option value="${e.id}" ${e.id === state.selectedEquipmentId ? 'selected' : ''}>${e.id} · ${formatSiteName(e.siteId)}</option>`).join("");
+      nameSelect.innerHTML = sites.map(s => `<option value="${s.manager}">${s.manager}</option>`).join("");
+
+      const e = currentEquipment();
+      document.getElementById("responsableEquipmentDetails").innerHTML = `
+        <div class="grid grid-2">
+          <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Site</div><strong>${formatSiteName(e.siteId)}</strong></div>
+          <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Code équipement</div><strong>${e.id}</strong></div>
+          <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Type</div><strong>${e.type}</strong></div>
+          <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Marque / Modèle</div><strong>${e.brand} ${e.model}</strong></div>
+          <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">N° de série</div><strong>${e.serial}</strong></div>
+          <div style="padding:14px;background:#f8fafc;border-radius:14px;"><div class="label">Statut</div>${statusBadge(e.status)}</div>
+        </div>`;
+
+      const hist = document.getElementById("responsableHistory");
+      hist.innerHTML = "";
+      (state.histories[e.id] || []).forEach(h => {
+        hist.innerHTML += `
+          <div class="list-item" style="margin-bottom:10px;">
+            <div>
+              <strong>${h.date}</strong>
+              <div class="small" style="margin-top:8px;"><strong>Problème :</strong> ${h.issue}</div>
+              <div class="small"><strong>Action :</strong> ${h.solution}</div>
+            </div>
+            <div>${statusBadge(h.status)}</div>
+          </div>`;
+      });
+      if (!(state.histories[e.id] || []).length) hist.innerHTML = '<div class="empty">Aucun historique.</div>';
+    }
+
+    function openEquipment(id) {
+      state.selectedEquipmentId = id;
+      selectTab("fiche");
+      render();
+    }
+
+    function openAsResponsable(id) {
+      state.selectedEquipmentId = id;
+      state.mode = "responsable";
+      render();
+    }
+
+    function selectTab(tabName) {
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.tab === tabName);
+      });
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
+      document.getElementById(`tab-${tabName}`).classList.remove("hidden");
+    }
+
+    document.getElementById("modeSwitch").addEventListener("click", () => {
+      state.mode = state.mode === "admin" ? "responsable" : "admin";
+      render();
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      if (!email || !password) {
+        alert("Merci de renseigner l’email et le mot de passe.");
+        return;
+      }
+      state.adminLogged = true;
+      render();
+    });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => selectTab(tab.dataset.tab));
+    });
+
+    document.getElementById("equipmentSearch").addEventListener("input", renderEquipments);
+
+    document.getElementById("responsableEquipmentSelect").addEventListener("change", (e) => {
+      state.selectedEquipmentId = e.target.value;
+      render();
+    });
+
+    document.getElementById("sendRequestBtn").addEventListener("click", () => {
+      const requester = document.getElementById("responsableName").value;
+      const description = document.getElementById("responsableDescription").value.trim();
+      const equipment = currentEquipment();
+      if (!description) {
+        alert("Merci de décrire le problème.");
+        return;
+      }
+      const newId = `DM-${String(state.requests.length + 1).padStart(4, "0")}`;
+      state.requests.unshift({
+        id: newId,
+        equipmentId: equipment.id,
+        requester,
+        siteId: equipment.siteId,
+        description,
+        photoNote: "1 photo jointe",
+        date: new Date().toISOString().slice(0, 10),
+        status: "Ouverte"
+      });
+      if (!state.histories[equipment.id]) state.histories[equipment.id] = [];
+      state.histories[equipment.id].unshift({
+        id: `INT-${String(state.histories[equipment.id].length + 101).padStart(3, "0")}`,
+        date: new Date().toISOString().slice(0, 10),
+        issue: description,
+        solution: "Demande créée via QR code",
+        cost: "0 €",
+        status: "Ouverte"
+      });
+      document.getElementById("responsableDescription").value = "";
+      alert("Demande envoyée.");
+      render();
+    });
+
+    document.getElementById("generate90Btn").addEventListener("click", () => {
+      if (!confirm("Recharger la base de 90 machines exemples ?")) return;
+      const fresh = buildDefaultState();
+      state.equipments = fresh.equipments;
+      state.histories = fresh.histories;
+      state.requests = fresh.requests;
+      state.selectedEquipmentId = fresh.selectedEquipmentId;
+      render();
+    });
+
+    window.openEquipment = openEquipment;
+    window.openAsResponsable = openAsResponsable;
+
+    selectTab("dashboard");
+    render();
+  </script>
 </body>
 </html>
